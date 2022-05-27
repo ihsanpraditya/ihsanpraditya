@@ -17,6 +17,7 @@ Plug 'godlygeek/tabular' " Buat ngelurusin, alignment, justify, dll.
 Plug 'preservim/vim-markdown' 
 Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app && yarn install'  }
 Plug 'sheerun/vim-polyglot' " Paket bahasa komputer, ada 598 paket bahasa, pendeteksi indentasi otomatis, dan pewarnaan sintaks bahasa.
+Plug 'vim-latex/vim-latex'
 " Others:
 " Lean & mean status/tabline for vim that's light as air.
 " Plug '/vim-airline/vim-airline'
@@ -33,6 +34,21 @@ call plug#end()
 
 " unknown
 syntax on
+
+" REQUIRED: This makes vim invoke Latex-Suite when you open a tex file.
+filetype plugin on
+
+" IMPORTANT: win32 users will need to have 'shellslash' set so that latex
+" can be called correctly.
+set shellslash
+
+" OPTIONAL: This enables automatic indentation as you type.
+filetype indent on
+
+" OPTIONAL: Starting with Vim 7, the filetype of empty .tex files defaults to
+" 'plaintex' instead of 'tex', which results in vim-latex not being loaded.
+" The following changes the default filetype back to 'tex':
+let g:tex_flavor='latex'
 
 " pengaturan emmet
 "allow emmet in all mode
@@ -67,9 +83,14 @@ let g:user_emmet_settings = {
 \  },
 \}
 
-" Disable markdown folding
+" Disable folding
 let g:vim_markdown_folding_disabled = 1
-set nofoldenable
+let g:Tex_AutoFolding = 0
+set foldenable
+set foldmethod=syntax
+set foldcolumn=0
+set foldlevel=1
+" set foldlevelstart=99
 
 " MarkDown starts here
 " set to 1, nvim will open the preview window after entering the markdown buffer
@@ -171,10 +192,11 @@ nmap <C-p> <Plug>MarkdownPreviewToggle
 " python-conf-provider
 " let g:python3_host_prog = '/usr/local/Cellar/python@3.10/3.10.1/bin/python3.10'
 let g:python3_host_prog = '/usr/local/bin/python3'
+
 " theme config
-" set t_Co=256
-set background=dark
-colorscheme base16-google-light
+set t_Co=256
+" set background=dark
+:colorscheme base16-atlas
 " PaperColor-theme
 " this is the default configuration for PaperColor
 " let g:PaperColor_Theme_Options = {
@@ -278,4 +300,3 @@ let g:NERDTreeGitStatusIndicatorMapCustom = {
 
 " noh - no highlight
 map <esc> :noh <CR>
-
