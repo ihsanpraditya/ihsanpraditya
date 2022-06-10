@@ -1,8 +1,8 @@
-" Urutan plugin vim-plug
-" 1. Konfigurasi Plugin dan kustomisasi pengurus file.
-" 2. Konfigurasi Plugin dan kustomisasi editor teks dan kode.
-" 3. Konfigurasi Plugin dan kustomisasi kustomisasi VIM.
-
+" Urutan plugin vim-plug.
+" 1. Pengaturan editor bawaan. 
+" 2. Pengaturan editor dengan plugin. 
+" 3. Pengaturan plugin kemampuan.
+" 4. Pengaturan tema. 
 " vim-plug
 call plug#begin('~/.config/nvim/plugged')
  
@@ -17,7 +17,10 @@ Plug 'godlygeek/tabular' " Buat ngelurusin, alignment, justify, dll.
 Plug 'preservim/vim-markdown' 
 Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app && yarn install'  }
 Plug 'sheerun/vim-polyglot' " Paket bahasa komputer, ada 598 paket bahasa, pendeteksi indentasi otomatis, dan pewarnaan sintaks bahasa.
-Plug 'vim-latex/vim-latex'
+Plug 'lervag/vimtex'
+Plug 'SirVer/ultisnips' " snippet engine
+Plug 'honza/vim-snippets' " Set of Snippets for many languages
+
 " Others:
 " Lean & mean status/tabline for vim that's light as air.
 " Plug '/vim-airline/vim-airline'
@@ -30,25 +33,83 @@ Plug 'chriskempson/base16-vim' " Banyak tema
 Plug 'NLKNguyen/papercolor-theme' " Tema inspirasi desain Google, load fast, mendukung mulai terminal 4-bit, juga syntax highlighting
 call plug#end()
 
+" PENGATURAN EDITOR BAWAAN
+
+" noh - no highlight
+map <esc> :noh <CR>
+"set nowrap
+
 " fix : backspace
 
 " unknown
 syntax on
 
-" REQUIRED: This makes vim invoke Latex-Suite when you open a tex file.
-filetype plugin on
+" PENGATURAN EDITOR DENGAN PLUGIN
+" NERDTree Configuration
+nnoremap <C-t> :NERDTreeToggle<CR>
 
-" IMPORTANT: win32 users will need to have 'shellslash' set so that latex
-" can be called correctly.
-set shellslash
+" Start NERDTree when Vim starts with a directory argument.
+autocmd StdinReadPre * let s:std_in=1
+autocmd VimEnter * if argc() == 1 && isdirectory(argv()[0]) && !exists('s:std_in') |
+    \ execute 'NERDTree' argv()[0] | wincmd p | enew | execute 'cd '.argv()[0] | endif
 
-" OPTIONAL: This enables automatic indentation as you type.
-filetype indent on
+" Exit Vim if NERDTree is the only window remaining in the only tab.
+autocmd BufEnter * if tabpagenr('$') == 1 && winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTabTree() | quit | endif
 
-" OPTIONAL: Starting with Vim 7, the filetype of empty .tex files defaults to
-" 'plaintex' instead of 'tex', which results in vim-latex not being loaded.
-" The following changes the default filetype back to 'tex':
-let g:tex_flavor='latex'
+" Close the tab if NERDTree is the only window remaining in it.
+autocmd BufEnter * if winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTabTree() | quit | endif
+
+" If another buffer tries to replace NERDTree, put it in the other window, and bring back NERDTree.
+autocmd BufEnter * if bufname('#') =~ 'NERD_tree_\d\+' && bufname('%') !~ 'NERD_tree_\d\+' && winnr('$') > 1 |
+    \ let buf=bufnr() | buffer# | execute "normal! \<C-W>w" | execute 'buffer'.buf | endif
+
+" NERDTreeGit Configuration
+let g:NERDTreeGitStatusIndicatorMapCustom = {
+                \ 'Modified'  :'✹',
+                \ 'Staged'    :'✚',
+                \ 'Untracked' :'✭',
+                \ 'Renamed'   :'➜', \ 'Unmerged'  :'═', \ 'Deleted'   :'✖', \ 'Dirty'     :'✗', \ 'Ignored'   :'☒', \ 'Clean'     :'✔︎', \ 'Unknown'   :'?', \ } " tabular configuration
+" let g:tabular_loaded = 1
+
+
+" PENGATURAN PLUGIN KEMAMPUAN
+" Pengaturan Latex
+" Viewer options: One may configure the viewer either by specifying a built-in
+" viewer method:
+let g:vimtex_view_method = 'zathura'
+
+" Or with a generic interface:
+let g:vimtex_view_general_viewer = 'preview'
+let g:vimtex_view_general_options = '--unique file:@pdf\#src:@line@tex'
+
+" VimTeX uses latexmk as the default compiler backend. If you use it, which is
+" strongly recommended, you probably don't need to configure anything. If you
+" want another compiler backend, you can change it as follows. The list of
+" supported backends and further explanation is provided in the documentation,
+" see ":help vimtex-compiler".
+" let g:vimtex_compiler_method = 'latexrun'
+
+" Ganti ke Xelatex
+" let g:vimtex_compiler_latexmk_engines = 'xelatex'
+
+" Most VimTeX mappings rely on localleader and this can be changed with the
+" following line. The default is usually fine and is the symbol "\".
+let maplocalleader = ","
+
+" snippets
+" Trigger configuration. You need to change this to something other than <tab> if you use one of the following:
+" - https://github.com/Valloric/YouCompleteMe
+" - https://github.com/nvim-lua/completion-nvim
+let g:UltiSnipsExpandTrigger="<tab>"
+let g:UltiSnipsJumpForwardTrigger="<tab>"
+let g:UltiSnipsJumpBackwardTrigger="<S-tab>"
+
+" If you want :UltiSnipsEdit to split your window.
+let g:UltiSnipsEditSplit="vertical"
+
+" Biar loading lebih ngebut
+let g:UltiSnipsSnippetDirectories=[$HOME.'/.config/nvim/UltiSnips']
+
 
 " pengaturan emmet
 "allow emmet in all mode
@@ -59,7 +120,7 @@ let g:user_emmet_install_global = 0
 autocmd FileType html,css EmmetInstall
 
 " redefining emmet key
-let g:user_emmet_leader_key='<C-l>'
+let g:user_emmet_leader_key='<C-z>'
 
 " Snippet to add meta tag for responsiveness
 let g:user_emmet_settings = {
@@ -193,10 +254,11 @@ nmap <C-p> <Plug>MarkdownPreviewToggle
 " let g:python3_host_prog = '/usr/local/Cellar/python@3.10/3.10.1/bin/python3.10'
 let g:python3_host_prog = '/usr/local/bin/python3'
 
-" theme config
+
+" PENGATURAN TEMA
 set t_Co=256
 " set background=dark
-:colorscheme base16-atlas
+:colorscheme base16-tomorrow-night
 " PaperColor-theme
 " this is the default configuration for PaperColor
 " let g:PaperColor_Theme_Options = {
@@ -262,41 +324,3 @@ hi! NonText ctermbg=NONE guibg=NONE guifg=NONE ctermfg=NONE
 
 " use fzf in Nvim
 set rtp+=/usr/local/opt/fzf
-
-" NERDTree Configuration
-nnoremap <C-t> :NERDTreeToggle<CR>
-
-" Start NERDTree when Vim starts with a directory argument.
-autocmd StdinReadPre * let s:std_in=1
-autocmd VimEnter * if argc() == 1 && isdirectory(argv()[0]) && !exists('s:std_in') |
-    \ execute 'NERDTree' argv()[0] | wincmd p | enew | execute 'cd '.argv()[0] | endif
-
-" Exit Vim if NERDTree is the only window remaining in the only tab.
-autocmd BufEnter * if tabpagenr('$') == 1 && winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTabTree() | quit | endif
-
-" Close the tab if NERDTree is the only window remaining in it.
-autocmd BufEnter * if winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTabTree() | quit | endif
-
-" If another buffer tries to replace NERDTree, put it in the other window, and bring back NERDTree.
-autocmd BufEnter * if bufname('#') =~ 'NERD_tree_\d\+' && bufname('%') !~ 'NERD_tree_\d\+' && winnr('$') > 1 |
-    \ let buf=bufnr() | buffer# | execute "normal! \<C-W>w" | execute 'buffer'.buf | endif
-
-" NERDTreeGit Configuration
-let g:NERDTreeGitStatusIndicatorMapCustom = {
-                \ 'Modified'  :'✹',
-                \ 'Staged'    :'✚',
-                \ 'Untracked' :'✭',
-                \ 'Renamed'   :'➜',
-                \ 'Unmerged'  :'═',
-                \ 'Deleted'   :'✖',
-                \ 'Dirty'     :'✗',
-                \ 'Ignored'   :'☒',
-                \ 'Clean'     :'✔︎',
-                \ 'Unknown'   :'?',
-                \ }
-
-" tabular configuration
-" let g:tabular_loaded = 1
-
-" noh - no highlight
-map <esc> :noh <CR>
