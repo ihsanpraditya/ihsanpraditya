@@ -17,8 +17,11 @@ Plug 'godlygeek/tabular' " Buat ngelurusin, alignment, justify, dll.
 Plug 'preservim/vim-markdown' 
 Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app && yarn install'  }
 Plug 'sheerun/vim-polyglot' " Paket bahasa komputer, ada 598 paket bahasa, pendeteksi indentasi otomatis, dan pewarnaan sintaks bahasa.
-Plug 'lervag/vimtex'
-Plug 'SirVer/ultisnips' " snippet engine
+Plug 'lervag/vimtex' " LaTeX engine
+Plug 'KeitaNakamura/tex-conceal.vim', {'for': 'tex'}
+Plug 'gillescastel/latex-snippets'         
+Plug 'neoclide/coc.nvim', {'branch': 'release'} " auto completion for any language
+Plug 'SirVer/ultisnips' " Snippet library
 Plug 'honza/vim-snippets' " Set of Snippets for many languages
 
 " Others:
@@ -34,6 +37,31 @@ Plug 'NLKNguyen/papercolor-theme' " Tema inspirasi desain Google, load fast, men
 call plug#end()
 
 " PENGATURAN EDITOR BAWAAN
+
+" Pengaturan NVim kaitannya dengan Terminal yang dipakai
+if $TERM =~ '^\(rxvt\|screen\|nsterm\|interix\|putty\)\(-.*\)\?$'
+    set notermguicolors
+elseif $TERM =~ '^\(tmux\|iterm\|vte\|gnome\)\(-.*\)\?$'
+    set termguicolors
+elseif $TERM =~ '^\(xterm\)\(-.*\)\?$'
+    if $XTERM_VERSION != ''
+        set termguicolors
+    elseif $KONSOLE_PROFILE_NAME != ''
+        set termguicolors
+    elseif $VTE_VERSION != ''
+        set termguicolors
+    else
+        set notermguicolors
+    endif
+endif
+
+" auto complete background color pink issue dan pengaturan warna lainnya
+hi Pmenu guifg=white guibg=Gray
+hi Tabline guifg=black
+hi PmenuSbar guifg=white
+
+" semua Comment menjadi italic
+:highlight Comment gui=italic
 
 " noh - no highlight
 map <esc> :noh <CR>
@@ -68,11 +96,43 @@ let g:NERDTreeGitStatusIndicatorMapCustom = {
                 \ 'Modified'  :'✹',
                 \ 'Staged'    :'✚',
                 \ 'Untracked' :'✭',
-                \ 'Renamed'   :'➜', \ 'Unmerged'  :'═', \ 'Deleted'   :'✖', \ 'Dirty'     :'✗', \ 'Ignored'   :'☒', \ 'Clean'     :'✔︎', \ 'Unknown'   :'?', \ } " tabular configuration
+                \ 'Renamed'   :'➜', 
+                \ 'Unmerged'  :'═', 
+                \ 'Deleted'   :'✖', 
+                \ 'Dirty'     :'✗', 
+                \ 'Ignored'   :'☒', 
+                \ 'Clean'     :'✔︎', 
+                \ 'Unknown'   :'?', }
+
+" tabular configuration
 " let g:tabular_loaded = 1
 
 
 " PENGATURAN PLUGIN KEMAMPUAN
+
+" COC
+" CONFIRM COMPLETION
+" inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<CR>"
+
+" TAB for trigger, confirm, snippet expand, jump like vscode
+inoremap <silent><expr> <TAB>
+    \ pumvisible() ? coc#_select_confirm() :
+    \ coc#expandableOrJumpable() ?
+    \ "\<C-r>=coc#rpc#request('doKeymap', ['snippets-expand-jump',''])\<CR>" :
+    \ <SID>check_back_space() ? "\<TAB>" :
+    \ coc#refresh()
+
+function! s:check_back_space() abort
+    let col = col('.') - 1
+    return !col || getline('.')[col - 1]  =~# '\s'
+endfunction
+
+let g:coc_snippet_next = '<tab>'
+"
+" AUTO SELECT FIRST
+inoremap <silent><expr> <cr> pumvisible() ? coc#_select_confirm()
+    \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
+
 " Pengaturan Latex
 " Viewer options: One may configure the viewer either by specifying a built-in
 " viewer method:
@@ -82,27 +142,29 @@ let g:vimtex_view_method = 'zathura'
 let g:vimtex_view_general_viewer = 'preview'
 let g:vimtex_view_general_options = '--unique file:@pdf\#src:@line@tex'
 
-" VimTeX uses latexmk as the default compiler backend. If you use it, which is
-" strongly recommended, you probably don't need to configure anything. If you
-" want another compiler backend, you can change it as follows. The list of
-" supported backends and further explanation is provided in the documentation,
-" see ":help vimtex-compiler".
-" let g:vimtex_compiler_method = 'latexrun'
-
-" Ganti ke Xelatex
-" let g:vimtex_compiler_latexmk_engines = 'xelatex'
-
-" Most VimTeX mappings rely on localleader and this can be changed with the
-" following line. The default is usually fine and is the symbol "\".
+" VIMTEX
+let g:tex_flavor='latex'
+let g:vimtex_view_method='zathura'
+let g:vimtex_quickfix_mode=0
 let maplocalleader = ","
 
-" snippets
-" Trigger configuration. You need to change this to something other than <tab> if you use one of the following:
-" - https://github.com/Valloric/YouCompleteMe
+" TEX-CONCEAL
+set conceallevel=2
+setlocal spell
+set spelllang=en_us
+let g:tex_conceal='abdgm'
+let g:tex_conceal_frac=1
+let g:tex_superscripts= "[0-9a-zA-W.,:;+-<>/()=]"
+let g:tex_subscripts= "[0-9aehijklmnoprstuvx,+-/().]"
+inoremap <C-l> <c-g>u<Esc>[s1z=`]a<c-g>u
+hi Conceal ctermbg=NONE
+
+" ULTISNIPS
 " - https://github.com/nvim-lua/completion-nvim
-let g:UltiSnipsExpandTrigger="<tab>"
-let g:UltiSnipsJumpForwardTrigger="<tab>"
-let g:UltiSnipsJumpBackwardTrigger="<S-tab>"
+" let g:UltiSnips#CanExpandSnippet=1
+let g:UltiSnipsExpandTrigger="<Tab>"
+let g:UltiSnipsJumpForwardTrigger="<Tab>"
+let g:UltiSnipsJumpBackwardTrigger="<S-Tab>"
 
 " If you want :UltiSnipsEdit to split your window.
 let g:UltiSnipsEditSplit="vertical"
@@ -111,7 +173,7 @@ let g:UltiSnipsEditSplit="vertical"
 let g:UltiSnipsSnippetDirectories=[$HOME.'/.config/nvim/UltiSnips']
 
 
-" pengaturan emmet
+" EMMET
 "allow emmet in all mode
 let g:user_emmet_mode='a'
  
@@ -144,6 +206,7 @@ let g:user_emmet_settings = {
 \  },
 \}
 
+" MARKDOWN
 " Disable folding
 let g:vim_markdown_folding_disabled = 1
 let g:Tex_AutoFolding = 0
@@ -151,67 +214,20 @@ set foldenable
 set foldmethod=syntax
 set foldcolumn=0
 set foldlevel=1
-" set foldlevelstart=99
-
-" MarkDown starts here
-" set to 1, nvim will open the preview window after entering the markdown buffer
-" default: 0
+let g:vim_markdown_math = 1
+let g:vim_markdown_frontmatter = 1
+let g:vim_markdown_toml_frontmatter = 1
+let g:vim_markdown_json_frontmatter = 1
+let g:vim_markdown_strikethrough = 1
 let g:mkdp_auto_start = 0
-
-" set to 1, the nvim will auto close current preview window when change
-" from markdown buffer to another buffer
-" default: 1
 let g:mkdp_auto_close = 1
-
-" set to 1, the vim will refresh markdown when save the buffer or
-" leave from insert mode, default 0 is auto refresh markdown as you edit or
-" move the cursor
-" default: 0
 let g:mkdp_refresh_slow = 0
-
-" set to 1, the MarkdownPreview command can be use for all files,
-" by default it can be use in markdown file
-" default: 0
 let g:mkdp_command_for_global = 0
-
-" set to 1, preview server available to others in your network
-" by default, the server listens on localhost (127.0.0.1)
-" default: 0
 let g:mkdp_open_to_the_world = 0
-
-" use custom IP to open preview page
-" useful when you work in remote vim and preview on local browser
-" more detail see: https://github.com/iamcco/markdown-preview.nvim/pull/9
-" default empty
 let g:mkdp_open_ip = ''
-
-" specify browser to open preview page
-" default: ''
 let g:mkdp_browser = '/Applications/Firefox.app'
-
-" set to 1, echo preview page url in command line when open preview page
-" default is 0
 let g:mkdp_echo_preview_url = 0
-
-" a custom vim function name to open preview page
-" this function will receive url as param
-" default is empty
 let g:mkdp_browserfunc = ''
-
-" options for markdown render
-" mkit: markdown-it options for render
-" katex: katex options for math
-" uml: markdown-it-plantuml options
-" maid: mermaid options
-" disable_sync_scroll: if disable sync scroll, default 0
-" sync_scroll_type: 'middle', 'top' or 'relative', default value is 'middle'
-"   middle: mean the cursor position alway show at the middle of the preview page
-"   top: mean the vim top viewport alway show at the top of the preview page
-"   relative: mean the cursor position alway show at the relative positon of the preview page
-" hide_yaml_meta: if hide yaml metadata, default is 1
-" sequence_diagrams: js-sequence-diagrams options
-" content_editable: if enable content editable for preview page, default: v:false
-" disable_filename: if disable filename header for preview page, default: 0
 let g:mkdp_preview_options = {
     \ 'mkit': {},
     \ 'katex': {},
@@ -225,50 +241,17 @@ let g:mkdp_preview_options = {
     \ 'content_editable': v:false,
     \ 'disable_filename': 0
     \ }
-
-" use a custom markdown style must be absolute path
-" like '/Users/username/markdown.css' or expand('~/markdown.css')
 let g:mkdp_markdown_css = ''
-
-" use a custom highlight style must absolute path
-" like '/Users/username/highlight.css' or expand('~/highlight.css')
 let g:mkdp_highlight_css = ''
-
-" use a custom port to start server or random for empty
 let g:mkdp_port = ''
-
-" preview page title
-" ${name} will be replace with the file name
 let g:mkdp_page_title = '「${name}」'
-
-" recognized filetypes
-" these filetypes will have MarkdownPreview... commands
-let g:mkdp_filetypes = ['markdown']
-
-" example
 nmap <C-s> <Plug>MarkdownPreview
 nmap <M-s> <Plug>MarkdownPreviewStop
 nmap <C-p> <Plug>MarkdownPreviewToggle
-
-" python-conf-provider
-" let g:python3_host_prog = '/usr/local/Cellar/python@3.10/3.10.1/bin/python3.10'
 let g:python3_host_prog = '/usr/local/bin/python3'
 
-
-" PENGATURAN TEMA
-set t_Co=256
-" set background=dark
-:colorscheme base16-tomorrow-night
-" PaperColor-theme
-" this is the default configuration for PaperColor
-" let g:PaperColor_Theme_Options = {
-  " \   'theme': {
-  " \     'default': {
-  " \       'transparent_background': 1
-  " \     }
-  " \   }
-  " \ }
-" this is my configuration for PaperColor
+" PAPERCOLOR
+set background=dark
 let g:PaperColor_Theme_Options = {
   \   'theme': {
   \     'default': {
@@ -291,26 +274,19 @@ let g:PaperColor_Theme_Options = {
   \     }
   \   }
   \ }
-" base16
-set termguicolors
 
-" conf visual-multi
-"let g:VM_default_mappings = 0
-let g:VM_maps = {}
-let g:VM_maps["Add Cursor Up"] = ''
-let g:VM_maps["Add Cursor Up"] = '<C-k>'
+" VISUAL-MULTI
+let g:VM_maps = {} 
+let g:VM_maps["Add Cursor Up"]   = '<C-k>'
 let g:VM_maps["Add Cursor Down"] = '<C-j>'
-"bingung apa nama dari cursor Up dan Down di Vim!?
-"let g:VM_custom_remaps = {}
-"let g:VM_custom_remaps = {'<C-k>': '<C-Up>'}
 let g:VM_mouse_mappings = 1
 
-" status bar, wombat, solarized, PaperColor, one
-set noshowmode
+" LIGHTLINE
 let g:lightline = {
-      \ 'colorscheme': 'wombat',
+      \ 'colorscheme': 'Tomorrow_Night',
       \ }
-" Ngatur penomoran number relative di tampilan yang focus saja
+
+" NUMBER
 set number
 augroup numbertoggle
   autocmd!
@@ -318,9 +294,20 @@ augroup numbertoggle
   autocmd BufLeave,FocusLost,InsertEnter,WinLeave   * if &nu                  | set nornu | endif
 augroup END
 
-" transparent
-hi! Normal ctermbg=NONE guibg=NONE 
-hi! NonText ctermbg=NONE guibg=NONE guifg=NONE ctermfg=NONE
+" COLORSCHEME
+colo base16-tomorrow-night
 
-" use fzf in Nvim
+" TRANSPARENT
+" hi Normal ctermbg=NONE guibg=NONE 
+" hi NonText ctermbg=NONE guibg=NONE guifg=NONE ctermfg=NONE
+
+" FONT COLOR
+hi Comment cterm=italic ctermfg=DarkGray
+hi Normal ctermfg=Gray
+hi SpellBad cterm=NONE ctermfg=Red ctermbg=NONE
+hi SpellLocal cterm=underlineline ctermbg=NONE
+
+" FZF
 set rtp+=/usr/local/opt/fzf
+
+
