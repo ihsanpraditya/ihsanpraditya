@@ -20,9 +20,9 @@ Plug 'sheerun/vim-polyglot' " Paket bahasa komputer, ada 598 paket bahasa, pende
 Plug 'lervag/vimtex' " LaTeX engine
 Plug 'KeitaNakamura/tex-conceal.vim', {'for': 'tex'}
 Plug 'gillescastel/latex-snippets'         
-Plug 'neoclide/coc.nvim', {'branch': 'release'} " auto completion for any language
 Plug 'SirVer/ultisnips' " Snippet library
-Plug 'honza/vim-snippets' " Set of Snippets for many languages
+Plug 'jayli/vim-easycomplete'
+" Plug 'honza/vim-snippets' " Set of Snippets for many languages
 
 " Others:
 " Lean & mean status/tabline for vim that's light as air.
@@ -110,30 +110,7 @@ let g:NERDTreeGitStatusIndicatorMapCustom = {
 
 " PENGATURAN PLUGIN KEMAMPUAN
 
-" COC
-" CONFIRM COMPLETION
-" inoremap <expr> <cr> pumvisible() ? "\<C-y>" : "\<CR>"
-
-" TAB for trigger, confirm, snippet expand, jump like vscode
-inoremap <silent><expr> <TAB>
-    \ pumvisible() ? coc#_select_confirm() :
-    \ coc#expandableOrJumpable() ?
-    \ "\<C-r>=coc#rpc#request('doKeymap', ['snippets-expand-jump',''])\<CR>" :
-    \ <SID>check_back_space() ? "\<TAB>" :
-    \ coc#refresh()
-
-function! s:check_back_space() abort
-    let col = col('.') - 1
-    return !col || getline('.')[col - 1]  =~# '\s'
-endfunction
-
-let g:coc_snippet_next = '<tab>'
-"
-" AUTO SELECT FIRST
-inoremap <silent><expr> <cr> pumvisible() ? coc#_select_confirm()
-    \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
-
-" Pengaturan Latex
+" VIMTEX
 " Viewer options: One may configure the viewer either by specifying a built-in
 " viewer method:
 let g:vimtex_view_method = 'zathura'
@@ -143,10 +120,33 @@ let g:vimtex_view_general_viewer = 'preview'
 let g:vimtex_view_general_options = '--unique file:@pdf\#src:@line@tex'
 
 " VIMTEX
+let g:vimtex_enabled=0
 let g:tex_flavor='latex'
 let g:vimtex_view_method='zathura'
 let g:vimtex_quickfix_mode=0
 let maplocalleader = ","
+
+" default vimtex latexmk compiler engine
+let g:vimtex_compiler_latexmk_engines = {
+    \ '_'                : '-xelatex',
+    \}
+
+" latexmk engine non continues compilation
+let g:vimtex_compiler_latexmk = {
+    \ 'continuous' : 0,
+    \}    
+
+" custom function for VIMTEX 
+nnoremap <silent> K :call <sid>show_documentation()<cr>
+function! s:show_documentation()
+  if index(['vim', 'help'], &filetype) >= 0
+    execute 'help ' . expand('<cword>')
+  elseif &filetype ==# 'tex'
+    VimtexDocPackage
+  else
+    call CocAction('doHover')
+  endif
+endfunction 
 
 " TEX-CONCEAL
 set conceallevel=2
@@ -159,11 +159,12 @@ let g:tex_subscripts= "[0-9aehijklmnoprstuvx,+-/().]"
 inoremap <C-l> <c-g>u<Esc>[s1z=`]a<c-g>u
 hi Conceal ctermbg=NONE
 
+
 " ULTISNIPS
 " - https://github.com/nvim-lua/completion-nvim
 " let g:UltiSnips#CanExpandSnippet=1
-let g:UltiSnipsExpandTrigger="<Tab>"
-let g:UltiSnipsJumpForwardTrigger="<Tab>"
+let g:UltiSnipsExpandTrigger="<TAB>"
+let g:UltiSnipsJumpForwardTrigger="<TAB>"
 let g:UltiSnipsJumpBackwardTrigger="<S-Tab>"
 
 " If you want :UltiSnipsEdit to split your window.
@@ -172,6 +173,15 @@ let g:UltiSnipsEditSplit="vertical"
 " Biar loading lebih ngebut
 let g:UltiSnipsSnippetDirectories=[$HOME.'/.config/nvim/UltiSnips']
 
+" VIM-EASYCOMPLETE
+let g:easycomplete_tab_trigger="<C-space>"
+let g:easycomplete_diagnostics_enable = 0
+let g:easycomplete_lsp_checking = 0
+let g:easycomplete_signature_enable = 0
+nnoremap gr :EasyCompleteReference<CR>
+nnoremap gd :EasyCompleteGotoDefinition<CR>
+nnoremap rn :EasyCompleteRename<CR>
+nnoremap gb :BackToOriginalBuffer<CR>
 
 " EMMET
 "allow emmet in all mode
@@ -248,7 +258,19 @@ let g:mkdp_page_title = '「${name}」'
 nmap <C-s> <Plug>MarkdownPreview
 nmap <M-s> <Plug>MarkdownPreviewStop
 nmap <C-p> <Plug>MarkdownPreviewToggle
+
+" PYTHON
 let g:python3_host_prog = '/usr/local/bin/python3'
+
+" PERL
+" let g:perl_host_prog = '/usr/local/bin/perl'
+let g:loaded_perl_provider = 0
+
+" RUBY
+let g:ruby_host_prog = '/Users/user/.rbenv/versions/3.0.3/bin/neovim-ruby-host'
+
+" NODEJS
+let g:node_host_prog = '/usr/local/bin/neovim-node-host'
 
 " PAPERCOLOR
 set background=dark
@@ -295,7 +317,7 @@ augroup numbertoggle
 augroup END
 
 " COLORSCHEME
-colo base16-tomorrow-night
+colo base16-black-metal
 
 " TRANSPARENT
 " hi Normal ctermbg=NONE guibg=NONE 
@@ -304,7 +326,7 @@ colo base16-tomorrow-night
 " FONT COLOR
 hi Comment cterm=italic ctermfg=DarkGray
 hi Normal ctermfg=Gray
-hi SpellBad cterm=NONE ctermfg=Red ctermbg=NONE
+hi SpellBad cterm=NONE ctermfg=NONE ctermbg=NONE
 hi SpellLocal cterm=underlineline ctermbg=NONE
 
 " FZF
