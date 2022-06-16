@@ -111,20 +111,19 @@ let g:NERDTreeGitStatusIndicatorMapCustom = {
 " PENGATURAN PLUGIN KEMAMPUAN
 
 " VIMTEX
-" Viewer options: One may configure the viewer either by specifying a built-in
-" viewer method:
-let g:vimtex_view_method = 'zathura'
-
-" Or with a generic interface:
-let g:vimtex_view_general_viewer = 'preview'
+let g:vimtex_view_method = 'skim'
+let g:vimtex_view_general_viewer = 'open'
 let g:vimtex_view_general_options = '--unique file:@pdf\#src:@line@tex'
-
-" VIMTEX
-let g:vimtex_enabled=0
+let g:vimtex_enabled=1
+let g:vimtex_fold_enabled=1
+let g:vimtex_view_skim_activate=1
+let g:vimtex_view_skim_reading_bar=1
+" let g:vimtex_view_skim_sync=1
 let g:tex_flavor='latex'
-let g:vimtex_view_method='zathura'
 let g:vimtex_quickfix_mode=0
 let maplocalleader = ","
+nmap <F5> <Plug>(vimtex-compile-ss)
+nmap <F6> <Plug>(vimtex-view)
 
 " default vimtex latexmk compiler engine
 let g:vimtex_compiler_latexmk_engines = {
