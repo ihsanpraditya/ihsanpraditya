@@ -39,38 +39,21 @@ call plug#end()
 " PENGATURAN EDITOR BAWAAN
 
 " Pengaturan NVim kaitannya dengan Terminal yang dipakai
-if $TERM =~ '^\(rxvt\|screen\|nsterm\|interix\|putty\)\(-.*\)\?$'
-    set notermguicolors
-elseif $TERM =~ '^\(tmux\|iterm\|vte\|gnome\)\(-.*\)\?$'
-    set termguicolors
-elseif $TERM =~ '^\(xterm\)\(-.*\)\?$'
-    if $XTERM_VERSION != ''
-        set termguicolors
-    elseif $KONSOLE_PROFILE_NAME != ''
-        set termguicolors
-    elseif $VTE_VERSION != ''
-        set termguicolors
-    else
-        set notermguicolors
-    endif
-endif
-
-" auto complete background color pink issue dan pengaturan warna lainnya
-hi Pmenu guifg=white guibg=Gray
-hi Tabline guifg=black
-hi PmenuSbar guifg=white
-
-" semua Comment menjadi italic
-:highlight Comment gui=italic
-
-" noh - no highlight
-map <esc> :noh <CR>
-"set nowrap
-
-" fix : backspace
-
-" unknown
-syntax on
+" if $TERM =~ '^\(rxvt\|screen\|nsterm\|interix\|putty\)\(-.*\)\?$'
+"     set notermguicolors
+" elseif $TERM =~ '^\(tmux\|iterm\|vte\|gnome\)\(-.*\)\?$'
+"     set termguicolors
+" elseif $TERM =~ '^\(xterm\)\(-.*\)\?$'
+"     if $XTERM_VERSION != ''
+"         set termguicolors
+"     elseif $KONSOLE_PROFILE_NAME != ''
+"         set termguicolors
+"     elseif $VTE_VERSION != ''
+"         set termguicolors
+"     else
+"         set notermguicolors
+"     endif
+" endif
 
 " PENGATURAN EDITOR DENGAN PLUGIN
 " NERDTree Configuration
@@ -104,7 +87,9 @@ let g:NERDTreeGitStatusIndicatorMapCustom = {
                 \ 'Clean'     :'✔︎', 
                 \ 'Unknown'   :'?', }
 
-" tabular configuration
+let NERDTreeShowLineNumbers=1
+
+" TABULAR
 " let g:tabular_loaded = 1
 
 
@@ -116,6 +101,7 @@ let g:vimtex_view_general_viewer = 'open'
 let g:vimtex_view_general_options = '--unique file:@pdf\#src:@line@tex'
 let g:vimtex_enabled=1
 let g:vimtex_fold_enabled=1
+let g:vimtex_view_skim_sync=1
 let g:vimtex_view_skim_activate=1
 let g:vimtex_view_skim_reading_bar=1
 " let g:vimtex_view_skim_sync=1
@@ -149,8 +135,8 @@ endfunction
 
 " TEX-CONCEAL
 set conceallevel=2
-setlocal spell
-set spelllang=en_us
+" setlocal spell
+" set spelllang=en_us
 let g:tex_conceal='abdgm'
 let g:tex_conceal_frac=1
 let g:tex_superscripts= "[0-9a-zA-W.,:;+-<>/()=]"
@@ -271,31 +257,6 @@ let g:ruby_host_prog = '/Users/user/.rbenv/versions/3.0.3/bin/neovim-ruby-host'
 " NODEJS
 let g:node_host_prog = '/usr/local/bin/neovim-node-host'
 
-" PAPERCOLOR
-set background=dark
-let g:PaperColor_Theme_Options = {
-  \   'theme': {
-  \     'default': {
-  \       'transparent_background': 1,
-  \       'override' : {
-  \         'color00' : ['#080808', '232'],
-  \         'linenumber_bg' : ['#080808', '232']
-  \       }
-  \     }
-  \   },
-  \   'language': {
-  \     'python': {
-  \       'highlight_builtins' : 1
-  \     },
-  \     'cpp': {
-  \       'highlight_standard_library': 1
-  \     },
-  \     'c': {
-  \       'highlight_builtins' : 1
-  \     }
-  \   }
-  \ }
-
 " VISUAL-MULTI
 let g:VM_maps = {} 
 let g:VM_maps["Add Cursor Up"]   = '<C-k>'
@@ -316,17 +277,31 @@ augroup numbertoggle
 augroup END
 
 " COLORSCHEME
-colo base16-black-metal
+set tgc " agar warna base15 nya nyala
+colo base16-google-dark
 
 " TRANSPARENT
 " hi Normal ctermbg=NONE guibg=NONE 
 " hi NonText ctermbg=NONE guibg=NONE guifg=NONE ctermfg=NONE
 
+" auto complete background color pink issue dan pengaturan warna lainnya
+" hi Pmenu guifg=white guibg=Gray
+" hi Tabline guifg=black
+" hi PmenuSbar guifg=white
+map <esc> :noh <CR>
+syntax on
+
 " FONT COLOR
-hi Comment cterm=italic ctermfg=DarkGray
-hi Normal ctermfg=Gray
-hi SpellBad cterm=NONE ctermfg=NONE ctermbg=NONE
-hi SpellLocal cterm=underlineline ctermbg=NONE
+
+" NON-GUI
+" hi Comment cterm=italic ctermfg=DarkGray
+" hi Normal ctermfg=Gray
+" hi SpellBad cterm=NONE ctermfg=NONE ctermbg=NONE
+" hi SpellLocal cterm=underlineline ctermbg=NONE
+
+" GUI
+hi Comment gui=italic guifg=Gray
+hi Normal guifg=NONE
 
 " FZF
 set rtp+=/usr/local/opt/fzf
