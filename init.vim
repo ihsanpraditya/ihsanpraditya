@@ -1,42 +1,51 @@
-" Urutan plugin vim-plug.
-" 1. Pengaturan editor bawaan. 
-" 2. Pengaturan editor dengan plugin. 
-" 3. Pengaturan plugin kemampuan.
-" 4. Pengaturan tema. 
-" vim-plug
+" DAFTAR ISI
+" Pemasangan plugin oleh Vim-Plug
+" Pengaturan editor bawaan. 
+" Pengaturan plugin kemampuan.
+" Pengaturan tampilan bawaaan dan pluginnya:
+
+" Semua bagian ditulis dengan huruf kapital
+
+" VIM-PLUG
 call plug#begin('~/.config/nvim/plugged')
  
-" Plugin File
+" PLUGIN KEMAMPUAN FILE:
 Plug 'scrooloose/nerdtree' " Sebagai file explorer side bar.
 Plug 'Xuyuanp/nerdtree-git-plugin' " Belum coba.
 
-" Plugin Editor Teks dan Kode
+" PLUGIN KEMAMPUAN TEKS:
 Plug 'mattn/emmet-vim'
 Plug 'mg979/vim-visual-multi', {'branch': 'master'} " Buat multi cursor
-Plug 'godlygeek/tabular' " Buat ngelurusin, alignment, justify, dll.
-Plug 'preservim/vim-markdown' 
 Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app && yarn install'  }
-Plug 'sheerun/vim-polyglot' " Paket bahasa komputer, ada 598 paket bahasa, pendeteksi indentasi otomatis, dan pewarnaan sintaks bahasa.
 Plug 'lervag/vimtex' " LaTeX engine
 Plug 'KeitaNakamura/tex-conceal.vim', {'for': 'tex'}
-Plug 'gillescastel/latex-snippets'         
 Plug 'SirVer/ultisnips' " Snippet library
-Plug 'jayli/vim-easycomplete'
+Plug 'jayli/vim-easycomplete' " LSP and auto-complete
+Plug 'gillescastel/latex-snippets'         
 " Plug 'honza/vim-snippets' " Set of Snippets for many languages
 
-" Others:
+" PLUGIN TAMPILAN:
+Plug 'itchyny/lightline.vim' " Memperindah status bar di bawah.
+Plug 'altercation/vim-colors-solarized' " Tema
+Plug 'tomasr/molokai' " Tema
+Plug 'NLKNguyen/papercolor-theme' " Tema inspirasi desain Google, load fast, mendukung mulai terminal 4-bit, juga syntax highlighting
 " Lean & mean status/tabline for vim that's light as air.
 " Plug '/vim-airline/vim-airline'
 " Plug 'vim-airline/vim-airline-themes'
 " Plugin Tema dan Kustomisasi
-Plug 'itchyny/lightline.vim' " Memperindah status bar di bawah.
-Plug 'altercation/vim-colors-solarized' " Tema
-Plug 'tomasr/molokai' " Tema
-Plug 'chriskempson/base16-vim' " Banyak tema
-Plug 'NLKNguyen/papercolor-theme' " Tema inspirasi desain Google, load fast, mendukung mulai terminal 4-bit, juga syntax highlighting
+" Plug 'sheerun/vim-polyglot' " Paket bahasa komputer, ada 598 paket bahasa, pendeteksi indentasi otomatis, dan pewarnaan sintaks bahasa.
+" Plug 'preservim/vim-markdown' " Markdown Syntax
+" Plug 'chriskempson/base16-vim' " Banyak tema
 call plug#end()
 
-" PENGATURAN EDITOR BAWAAN
+" PENGATURAN EDITOR BAWAAN:
+
+" PROVIDER
+let g:python3_host_prog = '/usr/local/bin/python3'
+" let g:perl_host_prog = '/usr/local/bin/perl'
+let g:loaded_perl_provider = 0
+let g:ruby_host_prog = '/Users/user/.rbenv/versions/3.0.3/bin/neovim-ruby-host'
+let g:node_host_prog = '/usr/local/bin/neovim-node-host'
 
 " Pengaturan NVim kaitannya dengan Terminal yang dipakai
 " if $TERM =~ '^\(rxvt\|screen\|nsterm\|interix\|putty\)\(-.*\)\?$'
@@ -55,45 +64,19 @@ call plug#end()
 "     endif
 " endif
 
-" PENGATURAN EDITOR DENGAN PLUGIN
-" NERDTree Configuration
-nnoremap <C-t> :NERDTreeToggle<CR>
-
-" Start NERDTree when Vim starts with a directory argument.
-autocmd StdinReadPre * let s:std_in=1
-autocmd VimEnter * if argc() == 1 && isdirectory(argv()[0]) && !exists('s:std_in') |
-    \ execute 'NERDTree' argv()[0] | wincmd p | enew | execute 'cd '.argv()[0] | endif
-
-" Exit Vim if NERDTree is the only window remaining in the only tab.
-autocmd BufEnter * if tabpagenr('$') == 1 && winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTabTree() | quit | endif
-
-" Close the tab if NERDTree is the only window remaining in it.
-autocmd BufEnter * if winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTabTree() | quit | endif
-
-" If another buffer tries to replace NERDTree, put it in the other window, and bring back NERDTree.
-autocmd BufEnter * if bufname('#') =~ 'NERD_tree_\d\+' && bufname('%') !~ 'NERD_tree_\d\+' && winnr('$') > 1 |
-    \ let buf=bufnr() | buffer# | execute "normal! \<C-W>w" | execute 'buffer'.buf | endif
-
-" NERDTreeGit Configuration
-let g:NERDTreeGitStatusIndicatorMapCustom = {
-                \ 'Modified'  :'✹',
-                \ 'Staged'    :'✚',
-                \ 'Untracked' :'✭',
-                \ 'Renamed'   :'➜', 
-                \ 'Unmerged'  :'═', 
-                \ 'Deleted'   :'✖', 
-                \ 'Dirty'     :'✗', 
-                \ 'Ignored'   :'☒', 
-                \ 'Clean'     :'✔︎', 
-                \ 'Unknown'   :'?', }
-
-let NERDTreeShowLineNumbers=1
+" PENGATURAN PLUGIN KEMAMPUAN: 
+" Tabular
+" Vimtex
+" Tex-Conceal
+" UltiSnips
+" Vim-Easycomplete
+" Emmet
+" MarkdownPreview
+" NERDTree
 
 " TABULAR
-" let g:tabular_loaded = 1
+let g:tabular_loaded = 1
 
-
-" PENGATURAN PLUGIN KEMAMPUAN
 
 " VIMTEX
 let g:vimtex_view_method = 'skim'
@@ -201,19 +184,19 @@ let g:user_emmet_settings = {
 \  },
 \}
 
-" MARKDOWN
+" 2 MARKDOWN PLUGIN : SYNTAX AND PREVIEW
 " Disable folding
-let g:vim_markdown_folding_disabled = 1
-let g:Tex_AutoFolding = 0
-set foldenable
-set foldmethod=syntax
-set foldcolumn=0
-set foldlevel=1
-let g:vim_markdown_math = 1
-let g:vim_markdown_frontmatter = 1
-let g:vim_markdown_toml_frontmatter = 1
-let g:vim_markdown_json_frontmatter = 1
-let g:vim_markdown_strikethrough = 1
+" let g:vim_markdown_folding_disabled = 1
+" let g:Tex_AutoFolding = 0
+" set foldenable
+" set foldmethod=syntax
+" set foldcolumn=0
+" set foldlevel=1
+" let g:vim_markdown_math = 1
+" let g:vim_markdown_frontmatter = 1
+" let g:vim_markdown_toml_frontmatter = 1
+" let g:vim_markdown_json_frontmatter = 1
+" let g:vim_markdown_strikethrough = 1
 let g:mkdp_auto_start = 0
 let g:mkdp_auto_close = 1
 let g:mkdp_refresh_slow = 0
@@ -244,18 +227,48 @@ nmap <C-s> <Plug>MarkdownPreview
 nmap <M-s> <Plug>MarkdownPreviewStop
 nmap <C-p> <Plug>MarkdownPreviewToggle
 
-" PYTHON
-let g:python3_host_prog = '/usr/local/bin/python3'
+" NERDTree Configuration
+nnoremap <C-t> :NERDTreeToggle<CR>
 
-" PERL
-" let g:perl_host_prog = '/usr/local/bin/perl'
-let g:loaded_perl_provider = 0
+" Start NERDTree when Vim starts with a directory argument.
+autocmd StdinReadPre * let s:std_in=1
+autocmd VimEnter * if argc() == 1 && isdirectory(argv()[0]) && !exists('s:std_in') |
+    \ execute 'NERDTree' argv()[0] | wincmd p | enew | execute 'cd '.argv()[0] | endif
 
-" RUBY
-let g:ruby_host_prog = '/Users/user/.rbenv/versions/3.0.3/bin/neovim-ruby-host'
+" Exit Vim if NERDTree is the only window remaining in the only tab.
+autocmd BufEnter * if tabpagenr('$') == 1 && winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTabTree() | quit | endif
 
-" NODEJS
-let g:node_host_prog = '/usr/local/bin/neovim-node-host'
+" Close the tab if NERDTree is the only window remaining in it.
+autocmd BufEnter * if winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTabTree() | quit | endif
+
+" If another buffer tries to replace NERDTree, put it in the other window, and bring back NERDTree.
+autocmd BufEnter * if bufname('#') =~ 'NERD_tree_\d\+' && bufname('%') !~ 'NERD_tree_\d\+' && winnr('$') > 1 |
+    \ let buf=bufnr() | buffer# | execute "normal! \<C-W>w" | execute 'buffer'.buf | endif
+
+" NERDTreeGit Configuration
+let g:NERDTreeGitStatusIndicatorMapCustom = {
+                \ 'Modified'  :'✹',
+                \ 'Staged'    :'✚',
+                \ 'Untracked' :'✭',
+                \ 'Renamed'   :'➜', 
+                \ 'Unmerged'  :'═', 
+                \ 'Deleted'   :'✖', 
+                \ 'Dirty'     :'✗', 
+                \ 'Ignored'   :'☒', 
+                \ 'Clean'     :'✔︎', 
+                \ 'Unknown'   :'?', }
+
+let NERDTreeShowLineNumbers=1
+
+
+" PENGATURAN TAMPILAN BAWAAAN DAN PLUGINNYA:
+" Visual-Multi
+" Lightline
+" Number
+" ColorScheme
+" Transparent
+" Font Configuration
+" FZF Search
 
 " VISUAL-MULTI
 let g:VM_maps = {} 
@@ -264,9 +277,9 @@ let g:VM_maps["Add Cursor Down"] = '<C-j>'
 let g:VM_mouse_mappings = 1
 
 " LIGHTLINE
-let g:lightline = {
-      \ 'colorscheme': 'Tomorrow_Night',
-      \ }
+let g:lightline = {'colorscheme': 'PaperColor'}
+" others : e plugged/lightline.vim/colorscheme.md
+"
 
 " NUMBER
 set number
@@ -278,7 +291,8 @@ augroup END
 
 " COLORSCHEME
 set tgc " agar warna base15 nya nyala
-colo base16-google-dark
+set background=dark
+colo PaperColor
 
 " TRANSPARENT
 " hi Normal ctermbg=NONE guibg=NONE 
@@ -290,16 +304,15 @@ colo base16-google-dark
 " hi PmenuSbar guifg=white
 map <esc> :noh <CR>
 syntax on
+set noshowmode
 
-" FONT COLOR
-
-" NON-GUI
+" FONT CONFIGURATION
+" non-gui:
 " hi Comment cterm=italic ctermfg=DarkGray
 " hi Normal ctermfg=Gray
 " hi SpellBad cterm=NONE ctermfg=NONE ctermbg=NONE
 " hi SpellLocal cterm=underlineline ctermbg=NONE
-
-" GUI
+" gui:
 hi Comment gui=italic guifg=Gray
 hi Normal guifg=NONE
 
