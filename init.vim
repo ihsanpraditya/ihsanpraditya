@@ -9,12 +9,14 @@
 " VIM-PLUG
 call plug#begin('~/.config/nvim/plugged')
  
-" PLUGIN KEMAMPUAN FILE:
-Plug 'scrooloose/nerdtree' " Sebagai file explorer side bar.
-Plug 'Xuyuanp/nerdtree-git-plugin' " Belum coba.
+" PLUGIN KEMAMPUAN EDITOR:
+Plug 'mhinz/vim-startify' " Halaman Selamat Datang
+" Plug 'scrooloose/nerdtree' " Sebagai file explorer side bar.
+" Plug 'Xuyuanp/nerdtree-git-plugin' " Belum coba.
 
 " PLUGIN KEMAMPUAN TEKS:
 Plug 'mattn/emmet-vim'
+Plug 'Yggdroot/indentLine' " Show indentation by line
 Plug 'mg979/vim-visual-multi', {'branch': 'master'} " Buat multi cursor
 Plug 'iamcco/markdown-preview.nvim', { 'do': 'cd app && yarn install'  }
 Plug 'lervag/vimtex' " LaTeX engine
@@ -22,13 +24,17 @@ Plug 'KeitaNakamura/tex-conceal.vim', {'for': 'tex'}
 Plug 'SirVer/ultisnips' " Snippet library
 Plug 'jayli/vim-easycomplete' " LSP and auto-complete
 Plug 'gillescastel/latex-snippets'         
+Plug 'kien/rainbow_parentheses.vim'
+" Plug 'nathanaelkane/vim-indent-guides' " Show indentation
 " Plug 'honza/vim-snippets' " Set of Snippets for many languages
 
 " PLUGIN TAMPILAN:
 Plug 'itchyny/lightline.vim' " Memperindah status bar di bawah.
 Plug 'altercation/vim-colors-solarized' " Tema
 Plug 'tomasr/molokai' " Tema
-Plug 'NLKNguyen/papercolor-theme' " Tema inspirasi desain Google, load fast, mendukung mulai terminal 4-bit, juga syntax highlighting
+Plug 'dracula/vim', { 'as': 'dracula' }
+Plug 'NLKNguyen/papercolor-theme' " Tema desain Google, fast, support 4-bit, syntax highlighting, bg-toggle
+" Plug 'morhetz/gruvbox' " tema
 " Lean & mean status/tabline for vim that's light as air.
 " Plug '/vim-airline/vim-airline'
 " Plug 'vim-airline/vim-airline-themes'
@@ -65,7 +71,6 @@ let g:node_host_prog = '/usr/local/bin/neovim-node-host'
 " endif
 
 " PENGATURAN PLUGIN KEMAMPUAN: 
-" Tabular
 " Vimtex
 " Tex-Conceal
 " UltiSnips
@@ -73,10 +78,7 @@ let g:node_host_prog = '/usr/local/bin/neovim-node-host'
 " Emmet
 " MarkdownPreview
 " NERDTree
-
-" TABULAR
-let g:tabular_loaded = 1
-
+" Indent
 
 " VIMTEX
 let g:vimtex_view_method = 'skim'
@@ -228,38 +230,53 @@ nmap <M-s> <Plug>MarkdownPreviewStop
 nmap <C-p> <Plug>MarkdownPreviewToggle
 
 " NERDTree Configuration
-nnoremap <C-t> :NERDTreeToggle<CR>
+" nnoremap <C-t> :NERDTreeToggle<CR>
 
-" Start NERDTree when Vim starts with a directory argument.
-autocmd StdinReadPre * let s:std_in=1
-autocmd VimEnter * if argc() == 1 && isdirectory(argv()[0]) && !exists('s:std_in') |
-    \ execute 'NERDTree' argv()[0] | wincmd p | enew | execute 'cd '.argv()[0] | endif
+" " Start NERDTree when Vim starts with a directory argument.
+" autocmd StdinReadPre * let s:std_in=1
+" autocmd VimEnter * if argc() == 1 && isdirectory(argv()[0]) && !exists('s:std_in') |
+"     \ execute 'NERDTree' argv()[0] | wincmd p | enew | execute 'cd '.argv()[0] | endif
 
-" Exit Vim if NERDTree is the only window remaining in the only tab.
-autocmd BufEnter * if tabpagenr('$') == 1 && winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTabTree() | quit | endif
+" " Exit Vim if NERDTree is the only window remaining in the only tab.
+" autocmd BufEnter * if tabpagenr('$') == 1 && winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTabTree() | quit | endif
 
-" Close the tab if NERDTree is the only window remaining in it.
-autocmd BufEnter * if winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTabTree() | quit | endif
+" " Close the tab if NERDTree is the only window remaining in it.
+" autocmd BufEnter * if winnr('$') == 1 && exists('b:NERDTree') && b:NERDTree.isTabTree() | quit | endif
 
-" If another buffer tries to replace NERDTree, put it in the other window, and bring back NERDTree.
-autocmd BufEnter * if bufname('#') =~ 'NERD_tree_\d\+' && bufname('%') !~ 'NERD_tree_\d\+' && winnr('$') > 1 |
-    \ let buf=bufnr() | buffer# | execute "normal! \<C-W>w" | execute 'buffer'.buf | endif
+" " If another buffer tries to replace NERDTree, put it in the other window, and bring back NERDTree.
+" autocmd BufEnter * if bufname('#') =~ 'NERD_tree_\d\+' && bufname('%') !~ 'NERD_tree_\d\+' && winnr('$') > 1 |
+"     \ let buf=bufnr() | buffer# | execute "normal! \<C-W>w" | execute 'buffer'.buf | endif
 
-" NERDTreeGit Configuration
-let g:NERDTreeGitStatusIndicatorMapCustom = {
-                \ 'Modified'  :'✹',
-                \ 'Staged'    :'✚',
-                \ 'Untracked' :'✭',
-                \ 'Renamed'   :'➜', 
-                \ 'Unmerged'  :'═', 
-                \ 'Deleted'   :'✖', 
-                \ 'Dirty'     :'✗', 
-                \ 'Ignored'   :'☒', 
-                \ 'Clean'     :'✔︎', 
-                \ 'Unknown'   :'?', }
+" " NERDTreeGit Configuration
+" let g:NERDTreeGitStatusIndicatorMapCustom = {
+"                 \ 'Modified'  :'✹',
+"                 \ 'Staged'    :'✚',
+"                 \ 'Untracked' :'✭',
+"                 \ 'Renamed'   :'➜', 
+"                 \ 'Unmerged'  :'═', 
+"                 \ 'Deleted'   :'✖', 
+"                 \ 'Dirty'     :'✗', 
+"                 \ 'Ignored'   :'☒', 
+"                 \ 'Clean'     :'✔︎', 
+"                 \ 'Unknown'   :'?', }
 
-let NERDTreeShowLineNumbers=1
+" let NERDTreeShowLineNumbers=1
 
+" INDENT
+let g:indentLine_enabled=0
+let g:indentLine_char_list=[]
+let g:indentLine_char_list=['|', '¦', '┆', '┊']
+" let g:indentLine_concealcursor='inc'
+" let g:indentLine_conceallevel=1
+let g:indentLine_setConceal = 0
+
+let g:indentLine_color_term = 239
+let g:indentLine_color_gui = '#A4E57E'
+let g:indentLine_color_tty_light = 7 " (default: 4)
+let g:indentLine_color_dark = 1 " (default: 2)
+
+" Background Switch dark-light from Solarized theme
+call togglebg#map("<F4>")
 
 " PENGATURAN TAMPILAN BAWAAAN DAN PLUGINNYA:
 " Visual-Multi
@@ -269,6 +286,8 @@ let NERDTreeShowLineNumbers=1
 " Transparent
 " Font Configuration
 " FZF Search
+" Better Rainbow Parentheses
+" Cursor
 
 " VISUAL-MULTI
 let g:VM_maps = {} 
@@ -292,19 +311,20 @@ augroup END
 " COLORSCHEME
 set tgc " agar warna base15 nya nyala
 set background=dark
-colo PaperColor
+colo desert
+" light color: zellner, peachpuff, shine(dont use),morning, delek, PaperColor 
 
 " TRANSPARENT
 " hi Normal ctermbg=NONE guibg=NONE 
 " hi NonText ctermbg=NONE guibg=NONE guifg=NONE ctermfg=NONE
 
-" auto complete background color pink issue dan pengaturan warna lainnya
-" hi Pmenu guifg=white guibg=Gray
-" hi Tabline guifg=black
-" hi PmenuSbar guifg=white
 map <esc> :noh <CR>
-syntax on
+sy on
+set synmaxcol=120
+" set nowrap
 set noshowmode
+set noswapfile
+set shiftwidth=4
 
 " FONT CONFIGURATION
 " non-gui:
@@ -313,10 +333,43 @@ set noshowmode
 " hi SpellBad cterm=NONE ctermfg=NONE ctermbg=NONE
 " hi SpellLocal cterm=underlineline ctermbg=NONE
 " gui:
-hi Comment gui=italic guifg=Gray
+hi Comment gui=italic cterm=italic guifg=Gray ctermfg=DarkGray
 hi Normal guifg=NONE
 
+" completion-menu
+" dark default theme
+hi Pmenu guibg=Gray guifg=Black
+hi PmenuSel guibg=Black guifg=Gray
 " FZF
 set rtp+=/usr/local/opt/fzf
 
+" Better Rainbow Parentheses
+let g:rbpt_colorpaird = [
+    \ ['brown',       'RoyalBlue3'],
+    \ ['Darkblue',    'SeaGreen3'],
+    \ ['darkgray',    'DarkOrchid3'],
+    \ ['darkgreen',   'firebrick3'],
+    \ ['darkcyan',    'RoyalBlue3'],
+    \ ['darkred',     'SeaGreen3'],
+    \ ['darkmagenta', 'DarkOrchid3'],
+    \ ['brown',       'firebrick3'],
+    \ ['gray',        'RoyalBlue3'],
+    \ ['black',       'SeaGreen3'],
+    \ ['darkmagenta', 'DarkOrchid3'],
+    \ ['Darkblue',    'firebrick3'],
+    \ ['darkgreen',   'RoyalBlue3'],
+    \ ['darkcyan',    'SeaGreen3'],
+    \ ['darkred',     'DarkOrchid3'],
+    \ ['red',         'firebrick3'],
+    \ ]
+let g:rbpt_max = 16
+let g:rbpt_loadcmd_toggle = 0
+au VimEnter * RainbowParenthesesToggle
+au Syntax * RainbowParenthesesLoadRound
+au Syntax * RainbowParenthesesLoadSquare
+au Syntax * RainbowParenthesesLoadBraces
 
+" CURSOR:
+set guicursor=n-v-c:block,i-ci-ve:ver25,r-cr:hor20,o:hor50
+    \,a:blinkwait700-blinkoff400-blinkon250-Cursor/lCursor
+    \,sm:block-blinkwait175-blinkoff150-blinkon175
